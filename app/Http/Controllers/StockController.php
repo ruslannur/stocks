@@ -16,7 +16,9 @@ class StockController extends Controller
     //
     public function index()
     {
-        $result = $this->appSpot->getData();
+        $base_uri = 'http://phisix-api3.appspot.com'; 
+        $file = 'stocks.json';
+        $result = $this->appSpot->getData($base_uri, $file);
         return $result;
     }
 }

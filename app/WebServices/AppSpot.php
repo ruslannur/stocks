@@ -10,10 +10,21 @@ use Illuminate\Support\Arr;
  
 class AppSpot
 {
-	public function getData()
+    private $base_uri = '';
+    private $file = '';
+    private $data = '';
+	
+	public function getData($base_uri, $file)
 	{
-		$data =  $this->getJson();
-		return $this->parseJson($data);
+		$this->setServer($base_uri, $file);
+		$this->getJson();
+		return $this->parseJson();
+	}
+
+	public function setServer($base_uri, $file)
+	{
+		$this->base_uri = $base_uri;
+		$this->file = $file;
 	}
 
 	public function getJson()
@@ -21,34 +32,34 @@ class AppSpot
     	try {
 	    	$client = new Client(
 	    		[
-	    		'base_uri' => 'http://phisix-api3.appspot.com',
+	    		'base_uri' => $this->base_uri,
 	    	    ]
 	    	);
 	    	
-	    	$response = $client->request('GET', 'stocks.json');    	
-	    	$data = [
+	    	$response = $client->request('GET', $this->file);    	
+	    	$this->data = [
 	    		'status' => $response->getStatusCode(),
 	    		'data' => $response->getBody()->getContents()
-	    	]; 
-	    	return $data;
+	    	];
+	    	
 	   	} catch (RequestException $e) {
-			return [
+			$this->data = [
 				'status' => '500',
 				'data' => ($e->hasResponse() ? Psr7\str($e->getResponse()) : '')
 			]; 
 		}
    	}
  
-    public static function parseJson($data)
+    public function parseJson()
     {
-        if ($data['status'] != '200') {
+        if ($this->data['status'] != '200') {
     		return [
     			'error' => '1',
-    			'error_txt' => $data['data']
+    			'error_txt' => $this->data['data']
     		]; 
     	}
 
-        $array =  json_decode($data['data'], true);
+        $array =  json_decode($this->data['data'], true);
         if (!Arr::exists($array, 'stock')) {
         	return [
         		'error' => '1',
