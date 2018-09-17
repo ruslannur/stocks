@@ -26,7 +26,7 @@ function loadData() {
     stocksList.empty();
 
     if (stocks.length) {
-        var content = "<tr>" + stocks.join("</tr><tr>") + "</tr>";
+        var content = "<tr style=\"height:50px\">" + stocks.join("</tr><tr style=\"height:50px\">") + "</tr>";
         stocksList.append(content);
     }
     setButtonAttr();    
